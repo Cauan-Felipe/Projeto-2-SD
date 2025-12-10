@@ -1,5 +1,5 @@
 module ula (
-    input signed [5:0] A, B,
+    input signed [15:0] A, B,
     input [2:0] param,
     output reg [6:0] S
 );
@@ -18,8 +18,9 @@ module ula (
             //Multiplicação
             3'b101: S = A * B; //MUL
 
-            default: S = 6'b0;
+            default: S = 16'b0;
         endcase
     end
     
 endmodule
+

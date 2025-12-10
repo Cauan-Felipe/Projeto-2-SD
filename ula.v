@@ -1,7 +1,7 @@
 module ula (
     input signed [15:0] A, B,
     input [2:0] param,
-    output reg [6:0] S
+    output reg [16:0] S
 );
 
 
@@ -23,4 +23,5 @@ module ula (
     end
     
 endmodule
+
 

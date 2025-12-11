@@ -3,8 +3,7 @@ module lcd(
     input wire rst_n,
     input wire init_done,      
     input wire send_key,       // Botão de envio
-    input wire [2:0] opcode,
-	 input wire [15:0] reg_value, // <--- O VALOR DO REGISTRADOR (Entrada Dinâmica)	 
+    input wire [2:0] opcode, 
     output reg lcd_rs,
     output reg lcd_rw,
     output reg lcd_en,
@@ -61,51 +60,35 @@ module lcd(
     // Formato: "LINHA 1 (16 chars) LINHA 2 (16 chars)"
 	 
 	 // Variáveis auxiliares para os caracteres ASCII
-    wire [7:0] dm, um, c, d, u; // Hundreds, Tens, Units
-
-    // 1. Dezena de Milhar (Ex: 6xxxx)
-    assign dm = (latched_value / 10000) + 8'h30;
-    
-    // 2. Unidade de Milhar (Ex: x5xxx) -> Resto de 10k, dividido por 1k
-    assign um = ((latched_value % 10000) / 1000) + 8'h30;
-    
-    // 3. Centena (Ex: xx5xx)
-    assign c  = ((latched_value % 1000) / 100) + 8'h30;
-    
-    // 4. Dezena (Ex: xxx3x)
-    assign d  = ((latched_value % 100) / 10) + 8'h30;
-    
-    // 5. Unidade (Ex: xxxx5)
-    assign u  = (latched_value % 10) + 8'h30;
 	 
     always @(*) begin
         case (latched_opcode) 
             //                        1234567890123456  1234567890123456
-            3'b000: current_msg = { "LOAD      [0000]", "+", dm, um, c, d, u, "          " };
+            3'b000: current_msg = { "LOAD                            " };
 
             // 3'b001: ADD (3 letras -> 1 espaço a mais na L1)
-            3'b001: current_msg = { "ADD       [0000]", "+", dm, um, c, d, u, "          " };
+            3'b001: current_msg = { "ADD                             " };
 
             // 3'b010: ADDI (4 letras)
-            3'b010: current_msg = { "ADDI      [0000]", "+", dm, um, c, d, u, "          " };
+            3'b010: current_msg = { "ADDI                            " };
 
             // 3'b011: SUB (3 letras)
-            3'b011: current_msg = { "SUB       [0000]", "+", dm, um, c, d, u, "          " };
+            3'b011: current_msg = { "SUB                             " };
 
             // 3'b100: SUBI (4 letras)
-            3'b100: current_msg = { "SUBI      [0000]", "+", dm, um, c, d, u, "          " };
+            3'b100: current_msg = { "SUBI                            " };
 
             // 3'b101: MUL (3 letras)
-            3'b101: current_msg = { "MUL       [0000]", "+", dm, um, c, d, u, "          " };
+            3'b101: current_msg = { "MUL                             " };
 
             // 3'b110: CLR (3 letras)
-            3'b110: current_msg = { "CLR       [0000]", "+", dm, um, c, d, u, "          " };
+            3'b110: current_msg = { "CLR                             " };
 
             // 3'b111: DPL (3 letras)
-            3'b111: current_msg = { "DPL       [0000]", "+", dm, um, c, d, u, "          " };
+            3'b111: current_msg = { "DPL                            " };
 
             // Default
-            default:current_msg = { "UNKNOWN   [0000]", "+", dm, um, c, d, u, "          " };
+            default:current_msg = { "UNKNOWN                       " };
         endcase
     end
 
@@ -140,7 +123,6 @@ module lcd(
                     if (button_released) begin
                         fsm_done <= 0;
                         latched_opcode <= opcode; // Captura Opcode
-								latched_value  <= reg_value; // <--- Não esqueça de capturar o valor aqui!
                         msg_index <= 0;
                         state <= S_CLEAR_SETUP;   // Inicia ciclo
                     end
